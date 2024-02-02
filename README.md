@@ -1,8 +1,9 @@
 This is a Pokemon search app forked based on the React Native Tutorial found at  https://www.sitepoint.com/getting-started-with-react-native/
 
 <h2>Pre-requisites:</h2>
-1. `nodejs`
-2. `expo`
+
+- `nodejs`
+- `expo`
 
 <h2>To run app:</h2>
 NOTE for Windows: Need to do this in Powershell:
@@ -15,4 +16,6 @@ NOTE for Windows: Need to do this in Powershell:
 4) Note: May need to remove things that are not supported by android, like <b> or <br> basic html stuff
 
 <h2>My own additions:</h2>
-* Added keyboard listener when Enter is pressed in search box (works on web only)
+
+- Added keyboard listener when Enter is pressed in search box (works on web only)
+- Switched expo to typescript & added a Typeahead component for search

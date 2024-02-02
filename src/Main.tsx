@@ -1,37 +1,80 @@
-import React, { Component } from 'react';
+import React,  { Component } from 'react';
 import { SafeAreaView, View, Text, TextInput, Button, Alert, StyleSheet, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
 import pokemon from 'pokemon';
 import Pokemon from './components/Pokemon';
+import { AutocompleteDropdown, TAutocompleteDropdownItem } from 'react-native-autocomplete-dropdown';
+import {useState} from 'react';
+
 const POKE_API_BASE_URL =  "https://pokeapi.co/api/v2";
 
+let pokeArray = new Array<{id: string, title: string}>();
+
+function initializePokemon() {
+ const allPokemonNames = pokemon.all('en');
+
+  let pokeMap = new Map<number, string>();
+
+  allPokemonNames.forEach( (name) => {
+    const id = pokemon.getId(name, 'en');
+    pokeMap.set( id, name );
+    pokeArray.push( {"id": id.toString(), "title": name });
+  });
+
+}
+initializePokemon();
+
+
 export default class App extends Component {
-
   state = {
-    isLoading: false, 
-    searchInput: '',
-    name: '', 
-    pic: '', 
-    types: [], 
+    isLoading: false,
+    selectedItem: null,
+    name: '',
+    pic: '',
+    types: [],
     desc: ''
-  }
+  };
 
 
-  render() {
-    const { name, pic, types, desc, searchInput, isLoading } = this.state; 
+
+render() {
+    const {
+      name,
+      pic,
+      types,
+      desc,
+      selectedItem,
+      isLoading
+    } = this.state;
     return (
       <SafeAreaView style={styles.wrapper}>
         <View style={styles.container}>
           <View style={styles.headContainer}>
             <View style={styles.textInputContainer}>
-              <TextInput
+              {/*<TextInput
                 style={styles.textInput}
                 onChangeText={(searchInput) => this.setState({searchInput})}
                 onKeyPress={ (e) => this.handleEnterPress(e)}
                 value={this.state.searchInput}
                 placeholder={"Search Pokemon"}
 				accessibilityLabel="SearchPokemon button accessibility label"
+              />*/}
+              <AutocompleteDropdown
+                  clearOnFocus={false}
+                  closeOnBlur={true}
+                  closeOnSubmit={true}
+                  // style={styles.textInput}
+                  // onChangeText={(searchInput) => this.setState({searchInput})}
+                  // onKeyPress={ (e) => this.handleEnterPress(e)}
+                  // placeholder={"Search Pokemon"}
+                  // accessibilityLabel="SearchPokemon button accessibility label"
+                  // initialValue={{ id: '2' }} // or just '2'
+                  onSelectItem={item => {
+                    console.log('selectedItem: ' + JSON.stringify(item));
+                    this.setState({selectedItem: item});
+                  }}
+                  dataSet={pokeArray}
               />
             </View>
             <View style={styles.buttonContainer}>
@@ -41,20 +84,23 @@ export default class App extends Component {
                 color="#0064e1"
               />
             </View>
+
           </View>
-          
+          <View>
+            <Text>{'Selected Item: ' + JSON.stringify(this.state.selectedItem)}</Text>
+          </View>
           <View style={styles.mainContainer}>
             {
-              isLoading && 
+              isLoading &&
               <ActivityIndicator size="large" color="#0064e1" />
             }
-            
+
             {
               !isLoading &&
-              <Pokemon 
-                name={name} 
-                pic={pic} 
-                types={types} 
+              <Pokemon
+                name={name}
+                pic={pic}
+                types={types}
                 desc={desc} />
             }
           </View>
@@ -72,12 +118,11 @@ export default class App extends Component {
   }
 
 searchPokemon = async () => {
-    
-   try {
-	const pokemonID = pokemon.getId(this.state.searchInput); // check if the entered Pokemon name is valid
-	const firstURL = `${POKE_API_BASE_URL}/pokemon/${pokemonID}`;
-	console.log('Calling searchPokemon, hitting URL: ' + firstURL);
+  const pokemonID = pokemon.getId(this.state.selectedItem.title); // check if the entered Pokemon name is valid
+  const firstURL = `${POKE_API_BASE_URL}/pokemon/${pokemonID}`;
 
+  console.log('Calling searchPokemon, hitting URL: ' + firstURL);
+  try {
 	/*   Alert.alert('you pressed the button and found pokemonid' + pokemonID + ', querying ' + firstURL); */
     this.setState({
       isLoading: true // show the loader while request is being performed
@@ -136,7 +181,7 @@ const styles = StyleSheet.create({
     marginTop: 100
   },
   textInputContainer: {
-    flex: 2
+    flex: 1,
   },
   buttonContainer: {
     flex: 1
