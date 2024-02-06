@@ -10,7 +10,9 @@ const Pokemon = ({ name, pic, types, desc }) => {
     <View style={styles.mainDetails}>
       <Image
         source={{uri: pic}}
-        style={styles.image} resizeMode={"contain"} />
+        style={styles.image} resizeMode={"contain"}
+
+        />
         <Text style={styles.mainText}>{name}</Text>
 
         <FlatList
@@ -30,9 +32,26 @@ const Pokemon = ({ name, pic, types, desc }) => {
         <View style={styles.description}>
           <Text>{desc}</Text>
         </View>
-    </View>   
+
+        {/* TODO enable circle and set its position per mouse events <Circle />*/}
+    </View>
   );
+
+
 }
+
+const Circle = () => {
+  return <View style={styles.circle} />;
+};
+
+StyleSheet.create({
+  circle: {
+    width: 100,
+    height: 100,
+    borderRadius: 100 / 2,
+    backgroundColor: "red",
+  },
+});
 
 //
 const styles = StyleSheet.create({
@@ -42,7 +61,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 100,
-    height: 100
+    height: 100,
+
   },
   mainText: {
     fontSize: 25,

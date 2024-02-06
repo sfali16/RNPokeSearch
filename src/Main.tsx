@@ -1,15 +1,28 @@
 import React,  { Component } from 'react';
-import { SafeAreaView, View, Text, TextInput, Button, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  StyleSheet,
+  ActivityIndicator,
+  TextInputComponent
+} from 'react-native';
 import axios from 'axios';
 
 import pokemon from 'pokemon';
 import Pokemon from './components/Pokemon';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { AutocompleteDropdown, TAutocompleteDropdownItem } from 'react-native-autocomplete-dropdown';
 import {useState} from 'react';
+import {placeholder} from "@babel/types";
 
 const POKE_API_BASE_URL =  "https://pokeapi.co/api/v2";
 
 let pokeArray = new Array<{id: string, title: string}>();
+let pokeArray2 = new Array<{label: string, value: string}>();
 
 function initializePokemon() {
  const allPokemonNames = pokemon.all('en');
@@ -19,7 +32,8 @@ function initializePokemon() {
   allPokemonNames.forEach( (name) => {
     const id = pokemon.getId(name, 'en');
     pokeMap.set( id, name );
-    pokeArray.push( {"id": id.toString(), "title": name });
+    // pokeArray.push( {"id": id.toString(), "title": name });
+    pokeArray2.push( {"value": id.toString(), "label": name});
   });
 
 }
@@ -27,26 +41,57 @@ initializePokemon();
 
 
 export default class App extends Component {
-  state = {
-    isLoading: false,
-    selectedItem: null,
-    name: '',
-    pic: '',
-    types: [],
-    desc: ''
-  };
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isLoading: false,
+      selectedItem: null,
+      name: '',
+      pic: '',
+      types: [],
+      desc: '',
+      open: false,
+      value: null,
+      items: []
+    };
+    this.setValue = this.setValue.bind(this);
+  }
+
+  setOpen(open) {
+    this.setState({
+      open
+    });
+  }
+
+  setValue(callback) {
+    this.setState(state => ({
+      value: callback(this.state.value)
+    }));
+  }
+
+  setItems(callback) {
+    this.setState(state => ({
+      items: callback(this.state.items)
+    }));
+  }
 
 
 render() {
+
     const {
       name,
       pic,
       types,
       desc,
       selectedItem,
-      isLoading
+      isLoading,
+      open,
+      value,
+      items,
     } = this.state;
+
     return (
       <SafeAreaView style={styles.wrapper}>
         <View style={styles.container}>
@@ -60,22 +105,25 @@ render() {
                 placeholder={"Search Pokemon"}
 				accessibilityLabel="SearchPokemon button accessibility label"
               />*/}
-              <AutocompleteDropdown
+              {/*<AutocompleteDropdown
                   clearOnFocus={false}
                   closeOnBlur={true}
                   closeOnSubmit={true}
-                  // style={styles.textInput}
-                  // onChangeText={(searchInput) => this.setState({searchInput})}
+                  // inputContainerStyle={styles.textInput}
                   // onKeyPress={ (e) => this.handleEnterPress(e)}
-                  // placeholder={"Search Pokemon"}
-                  // accessibilityLabel="SearchPokemon button accessibility label"
                   // initialValue={{ id: '2' }} // or just '2'
+                  InputComponent={TextInputComponent}
                   onSelectItem={item => {
                     console.log('selectedItem: ' + JSON.stringify(item));
                     this.setState({selectedItem: item});
                   }}
                   dataSet={pokeArray}
-              />
+              />*/}
+              <DropDownPicker items={items}
+                              open={open}
+                              setOpen={setOpen}
+                              setValue={setValue}
+                              value={value}/>
             </View>
             <View style={styles.buttonContainer}>
               <Button
@@ -87,7 +135,9 @@ render() {
 
           </View>
           <View>
-            <Text>{'Selected Item: ' + JSON.stringify(this.state.selectedItem)}</Text>
+            { this.state.value !== '' &&
+              <Text>{'Selected Value: ' + JSON.stringify(this.state.value)}</Text>
+            }
           </View>
           <View style={styles.mainContainer}>
             {
@@ -97,11 +147,14 @@ render() {
 
             {
               !isLoading &&
-              <Pokemon
+              <View>
+                <Pokemon
                 name={name}
                 pic={pic}
                 types={types}
                 desc={desc} />
+                <Button title="Move {name}"/>
+              </View>
             }
           </View>
         </View>
@@ -118,7 +171,7 @@ render() {
   }
 
 searchPokemon = async () => {
-  const pokemonID = pokemon.getId(this.state.selectedItem.title); // check if the entered Pokemon name is valid
+  const pokemonID = pokemon.getId(this.state.value); // check if the entered Pokemon name is valid
   const firstURL = `${POKE_API_BASE_URL}/pokemon/${pokemonID}`;
 
   console.log('Calling searchPokemon, hitting URL: ' + firstURL);
