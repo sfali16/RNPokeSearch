@@ -21,10 +21,26 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.sfali.DaanPokeSearch"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "buildToolsVersion": "34.0.0",
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "sourceCompatibility": 21,
+            "targetCompatibility": 21,
+            "kotlinVersion": "1.9.0"
+          }
+        }
+      ]
+    ]
   }
 }

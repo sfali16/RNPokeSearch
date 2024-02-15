@@ -30,6 +30,7 @@ export default class App extends Component {
   state = {
     isLoading: false,
     selectedItem: null,
+    searchInput: null,
     name: '',
     pic: '',
     types: [],
@@ -86,9 +87,15 @@ render() {
             </View>
 
           </View>
-          <View>
-            <Text>{'Selected Item: ' + JSON.stringify(this.state.selectedItem)}</Text>
-          </View>
+          <>
+            <Text>{ (this.state.searchInput === null ) ? 'Select a Pokemon' : 'SearchInput (abc): ' + JSON.stringify(this.state.searchInput)}</Text>
+
+          </>
+          <>
+            <Text>{ (this.state.selectedItem === null ) ? '' : 'Selected Item (abc): ' + JSON.stringify(this.state.selectedItem)}</Text>
+
+          </>
+
           <View style={styles.mainContainer}>
             {
               isLoading &&
@@ -118,7 +125,8 @@ render() {
   }
 
 searchPokemon = async () => {
-  const pokemonID = pokemon.getId(this.state.selectedItem.title); // check if the entered Pokemon name is valid
+  let pokemonName = this.state.searchInput || this.state.selectedItem.title;
+  const pokemonID = pokemon.getId(pokemonName); // check if the entered Pokemon name is valid
   const firstURL = `${POKE_API_BASE_URL}/pokemon/${pokemonID}`;
 
   console.log('Calling searchPokemon, hitting URL: ' + firstURL);

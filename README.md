@@ -4,6 +4,7 @@ This is a Pokemon search app forked based on the React Native Tutorial found at 
 
 - `nodejs`
 - `expo`
+- `JDK 17 if you want to build native app locally`
 
 <h2>To run app:</h2>
 NOTE for Windows: Need to do this in Powershell:
@@ -19,3 +20,4 @@ NOTE for Windows: Need to do this in Powershell:
 
 - Added keyboard listener when Enter is pressed in search box (works on web only)
 - Switched expo to typescript & added a Typeahead component for search
+  - Upgraded expo to latest version, and needed to downgrade JDK to 17 to get it to work on Android
